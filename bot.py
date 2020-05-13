@@ -1,7 +1,6 @@
 import os
 import speech_recognition as sr
 from pydub import AudioSegment
-from telegram import TelegramError
 from telegram.ext import MessageHandler, Updater
 from telegram.ext.filters import Filters
 
@@ -30,6 +29,12 @@ def on_voice_message(update, context):
             context.bot.send_message(message.chat.id, text, reply_to_message_id=message.message_id)
 
 
+def on_error(update, context):
+    print(context.error)
+    context.bot.send_message(update.message.chat.id, '<an error occurred>',
+        reply_to_message_id=update.message.message_id)
+
+
 def transcribe_file(path):
     new_path = 'file.wav'
     AudioSegment.from_ogg(path).export(new_path, format='wav')
@@ -43,12 +48,6 @@ def transcribe_file(path):
         return r.recognize_google(audio)
     except sr.UnknownValueError:
         return '<could not understand audio>'
-
-
-def on_error(update, context):
-    print(context.error)
-    context.bot.send_message(update.message.chat.id, '<an error occurred>',
-        reply_to_message_id=update.message.message_id)
 
 
 if __name__ == '__main__':
