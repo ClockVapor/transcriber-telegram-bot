@@ -18,15 +18,11 @@ def run(token):
 
 
 def on_voice_message(update, context):
-    message = update.message
-    if message:
-        voice = message.voice
-        if voice:
-            tfile = voice.get_file(timeout=10)
-            path = tfile.download()
-            text = transcribe_file(path)
-            os.remove(path)
-            context.bot.send_message(message.chat.id, text, reply_to_message_id=message.message_id)
+    tfile = update.message.voice.get_file(timeout=10)
+    path = tfile.download()
+    response = transcribe_file(path)
+    os.remove(path)
+    context.bot.send_message(update.message.chat.id, response, reply_to_message_id=update.message.message_id)
 
 
 def on_error(update, context):
